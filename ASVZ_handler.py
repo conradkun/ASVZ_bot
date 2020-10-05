@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import argparse
 from apscheduler.schedulers.background import BackgroundScheduler as Scheduler
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -11,12 +12,12 @@ from webdriver_manager.firefox import GeckoDriverManager
 
 class ASVZ_handler(object):
 
-    def __init__(self, login, password, browser='Firefox', headless=True):
+    def __init__(self, user, password, browser='Firefox', headless=True):
         # Define a TimeOut limit
         self.delay = 5
 
         # Store credentials for login
-        self.login = login
+        self.user = user
         self.password = password
         if browser == 'Chrome':
             # Use chrome
@@ -64,10 +65,10 @@ class ASVZ_handler(object):
             print("ETH login page took too long to load.")
 
         # Fill in credentials
-        login_field = self.driver.find_element_by_name("j_username")
+        user_field = self.driver.find_element_by_name("j_username")
         pass_field = self.driver.find_element_by_name("j_password")
 
-        login_field.send_keys(self.login)
+        user_field.send_keys(self.user)
         pass_field.send_keys(self.password)
 
         # Submit credentials
@@ -140,9 +141,22 @@ class ASVZ_handler(object):
         scheduler.shutdown()
     
  
+def parse_args():
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('--user', '-u', type=str, required=True,
+                        help='Username of your ASVZ account')
+    parser.add_argument('--password', '-p', type=str, required=True,
+                        help='Password of your ASVZ account')
+    parser.add_argument('--url', type=str, required=True,
+                        help='URL of the activity to be enroled in')
 
+    args = parser.parse_args()
+    return args
  
 if __name__ == '__main__':
+    # Parse arguments
+    args = parse_args()
+
     # Enter your login credentials here
-    asvz = ASVZ_handler(login='', password='')
-    asvz.enrol('https://schalter.asvz.ch/tn/lessons/139683')
+    asvz = ASVZ_handler(user=args.user, password=args.password)
+    asvz.enrol(args.url)
