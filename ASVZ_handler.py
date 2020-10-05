@@ -5,12 +5,13 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait as Wait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.options import Options
 from selenium.common.exceptions import TimeoutException
 from webdriver_manager.firefox import GeckoDriverManager
 
 class ASVZ_handler(object):
 
-    def __init__(self, login, password, browser='Firefox'):
+    def __init__(self, login, password, browser='Firefox', headless=True):
         # Define a TimeOut limit
         self.delay = 5
 
@@ -19,10 +20,15 @@ class ASVZ_handler(object):
         self.password = password
         if browser == 'Chrome':
             # Use chrome
-            self.driver = webdriver.Chrome(executable_path=ChromeDriverManager().install())
+            options = webdriver.ChromeOptions()
+            if headless:
+                options.add_argument('headless')
+            self.driver = webdriver.Chrome(options=options, executable_path=ChromeDriverManager().install())
         elif browser == 'Firefox':
             # Set it to Firefox
-            self.driver = webdriver.Firefox(executable_path=GeckoDriverManager().install())
+            options = Options()
+            options.headless = headless
+            self.driver = webdriver.Firefox(options=options, executable_path=GeckoDriverManager().install())
 
     def _login(self):
         # Wait for the event url to load
