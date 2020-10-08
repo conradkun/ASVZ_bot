@@ -127,7 +127,7 @@ class ASVZ_handler(object):
             print("Event URL took too long to load.")
 
         # Get enrolment time and login time (1 min before enrolment)
-        enrolment_time = self._get_enrolment_time() + timedelta(milliseconds=10)
+        enrolment_time = self._get_enrolment_time() + timedelta(milliseconds=500)
         login_time = enrolment_time - timedelta(minutes=1)
 
         # Setup the scheduler with both jobs
